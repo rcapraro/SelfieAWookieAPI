@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <RootNamespace>SelfieAWookie.Core.Domain</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\SelfieAWookie.Core.Framework\SelfieAWookie.Core.Framework.csproj" />
+    </ItemGroup>
+
+</Project>
