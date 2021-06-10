@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,12 +26,15 @@ namespace SelfieAWookieAPI
             services.AddDbContext<SelfieContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("SelfieDatabase"), sqlOptions => { })
             );
+            services.AddDefaultIdentity<IdentityUser>(options => { options.SignIn.RequireConfirmedEmail = true; })
+                .AddEntityFrameworkStores<SelfieContext>();
+            services.AddCustomSecurity(Configuration);
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo {Title = "SelfieAWookieAPI", Version = "v1"});
             });
-            services.AddInjection();
+            services.AddInjections();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -44,9 +48,9 @@ namespace SelfieAWookieAPI
             }
 
             app.UseHttpsRedirection();
-
             app.UseRouting();
-
+            app.UseCors(SecurityMethods.TestPolicy);
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });

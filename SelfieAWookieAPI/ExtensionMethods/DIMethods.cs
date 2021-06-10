@@ -12,7 +12,7 @@ namespace SelfieAWookieAPI.ExtensionMethods
         ///     Prepare custom dependency injection
         /// </summary>
         /// <param name="services"></param>
-        public static void AddInjection(this IServiceCollection services)
+        public static void AddInjections(this IServiceCollection services)
         {
             services.AddScoped<ISelfieRepository, DefaultSelfieRepository>();
         }

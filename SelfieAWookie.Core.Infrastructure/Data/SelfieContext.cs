@@ -1,11 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using SelfieAWookie.Core.Domain;
 using SelfieAWookie.core.Framework;
 using SelfieAWookie.Core.Infrastructure.Data.TypeConfiguration;
 
 namespace SelfieAWookie.Core.Infrastructure.Data
 {
-    public class SelfieContext : DbContext, IUnitOfWork
+    public class SelfieContext : IdentityDbContext, IUnitOfWork
     {
         #region Internal methods
 

@@ -1,16 +1,22 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SelfieAWookie.Core.Domain;
 using SelfieAWookieAPI.Application.Dto;
+using SelfieAWookieAPI.ExtensionMethods;
 
 namespace SelfieAWookieAPI.Controllers
 {
-    [Route("api/v1/[controller]")]
     [ApiController]
+    [Route("api/v1/[controller]")]
+    [EnableCors(SecurityMethods.DefaultPolicy)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class SelfieController : ControllerBase
     {
         #region Constructors

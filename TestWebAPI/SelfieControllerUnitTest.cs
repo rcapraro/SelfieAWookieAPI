@@ -19,7 +19,8 @@ namespace TestWebAPI
         {
             //ARRANGE
             var repositoryMock = new Mock<ISelfieRepository>();
-            var controller = new SelfieController(repositoryMock.Object);
+            var configurationMock = new Mock<IWebHostEnvironment>();
+            var controller = new SelfieController(repositoryMock.Object, configurationMock.Object);
             var expectedList = new List<Selfie>
             {
                 new() {Wookie = new Wookie()},
@@ -50,6 +51,7 @@ namespace TestWebAPI
             //ARRANGE
             var selfieDto = new SelfieDto();
             var repositoryMock = new Mock<ISelfieRepository>();
+            var configurationMock = new Mock<IWebHostEnvironment>();
             var unitOfWork = new Mock<IUnitOfWork>();
             repositoryMock
                 .Setup(item => item.UnitOfWork)
@@ -59,7 +61,7 @@ namespace TestWebAPI
                 .Returns(new Selfie {Id = 42});
 
             //ACT
-            var controller = new SelfieController(repositoryMock.Object);
+            var controller = new SelfieController(repositoryMock.Object, configurationMock.Object);
             var result = controller.AddOne(selfieDto);
 
             //ASSERT
