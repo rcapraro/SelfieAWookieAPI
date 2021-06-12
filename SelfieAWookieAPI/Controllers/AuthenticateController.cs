@@ -5,8 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using SelfieAWookie.Core.Infrastructure.Configuration;
 using SelfieAWookieAPI.Application.Dto;
 
 namespace SelfieAWookieAPI.Controllers
@@ -17,10 +19,14 @@ namespace SelfieAWookieAPI.Controllers
     {
         #region Constructors
 
-        public AuthenticateController(UserManager<IdentityUser> userManager, IConfiguration configuration)
+        public AuthenticateController(
+            ILogger<AuthenticateController> logger,
+            UserManager<IdentityUser> userManager,
+            IOptions<SecurityOption> securityOption)
         {
+            _logger = logger;
             _userManager = userManager;
-            _configuration = configuration;
+            _securityOption = securityOption.Value;
         }
 
         #endregion
@@ -33,7 +39,7 @@ namespace SelfieAWookieAPI.Controllers
             var jwtTokenHandler = new JwtSecurityTokenHandler();
 
             // We get our secret from the app settings
-            var key = Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]);
+            var jwtKey = Encoding.UTF8.GetBytes(_securityOption.Key);
 
             // we define our token descriptor
             // We need to utilise claims which are properties in our token which gives information about the token
@@ -54,7 +60,7 @@ namespace SelfieAWookieAPI.Controllers
                 // but since this is a demo app we can extend it to fit our current need
                 Expires = DateTime.UtcNow.AddHours(6),
                 // here we are adding the encryption algorithm information which will be used to decrypt our token
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(jwtKey),
                     SecurityAlgorithms.HmacSha512Signature)
             };
 
@@ -72,6 +78,8 @@ namespace SelfieAWookieAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Login([FromBody] AuthenticateUserDto userDto)
         {
+            _logger.LogInformation("Authenticating user {Login}", userDto.Login);
+
             IActionResult result = BadRequest();
 
             var user = await _userManager.FindByEmailAsync(userDto.Login);
@@ -91,6 +99,8 @@ namespace SelfieAWookieAPI.Controllers
         [Route("register")]
         public async Task<IActionResult> Register([FromBody] AuthenticateUserDto userDto)
         {
+            _logger.LogInformation("Registering user {Name}", userDto.Name);
+            
             IActionResult result = BadRequest();
 
             var user = new IdentityUser(userDto.Login)
@@ -111,8 +121,9 @@ namespace SelfieAWookieAPI.Controllers
 
         #region fields
 
+        private readonly ILogger<AuthenticateController> _logger;
         private readonly UserManager<IdentityUser> _userManager;
-        private readonly IConfiguration _configuration;
+        private readonly SecurityOption _securityOption;
 
         #endregion
     }

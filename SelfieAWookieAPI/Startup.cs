@@ -28,6 +28,7 @@ namespace SelfieAWookieAPI
             );
             services.AddDefaultIdentity<IdentityUser>(options => { options.SignIn.RequireConfirmedEmail = true; })
                 .AddEntityFrameworkStores<SelfieContext>();
+            services.AddCustomOptions(Configuration);
             services.AddCustomSecurity(Configuration);
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -40,12 +41,10 @@ namespace SelfieAWookieAPI
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "SelfieAWookieAPI v1"));
-            }
+            if (env.IsDevelopment()) app.UseDeveloperExceptionPage();
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "SelfieAWookieAPI v1"));
 
             app.UseHttpsRedirection();
             app.UseRouting();

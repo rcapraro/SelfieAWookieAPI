@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using SelfieAWookie.Core.Infrastructure.Configuration;
 
 namespace SelfieAWookieAPI.ExtensionMethods
 {
@@ -26,6 +27,8 @@ namespace SelfieAWookieAPI.ExtensionMethods
 
         private static void AddCustomAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
+            var securityOption = new SecurityOption();
+            configuration.GetSection("Jwt").Bind(securityOption);
             services.AddAuthentication(options =>
                 {
                     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -34,7 +37,7 @@ namespace SelfieAWookieAPI.ExtensionMethods
                 }
             ).AddJwtBearer(options =>
             {
-                var jwtKey = configuration["Jwt:Key"];
+                var jwtKey = securityOption.Key;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
@@ -49,6 +52,8 @@ namespace SelfieAWookieAPI.ExtensionMethods
 
         private static void AddCustomCors(this IServiceCollection services, IConfiguration configuration)
         {
+            var corsOption = new CorsOption();
+            configuration.GetSection("Cors").Bind(corsOption);
             services.AddCors(options =>
                 {
                     options.AddPolicy(DefaultPolicy, builder =>
@@ -57,7 +62,7 @@ namespace SelfieAWookieAPI.ExtensionMethods
                             .AllowAnyMethod()
                     );
                     options.AddPolicy(TestPolicy, builder =>
-                        builder.WithOrigins(configuration["Cors:Origin"])
+                        builder.WithOrigins(corsOption.Origin)
                             .AllowAnyHeader()
                             .AllowAnyMethod()
                     );
